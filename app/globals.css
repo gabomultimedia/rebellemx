@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply bg-background text-on-surface font-body antialiased overflow-x-hidden selection:bg-primary-fixed selection:text-on-primary-fixed;
+  }
+}
+
+.editorial-shadow {
+  box-shadow: 0 40px 100px -20px rgba(120, 89, 21, 0.04);
+}
+
+.parallax-header {
+  letter-spacing: -0.02em;
+}
+
+/* Contenido HTML del blog (Journal) */
+.journal-prose {
+  @apply font-body text-base leading-relaxed sm:text-lg;
+}
+.journal-prose p {
+  @apply mb-4 text-on-surface-variant;
+}
+.journal-prose h2,
+.journal-prose h3 {
+  @apply mb-4 mt-10 font-headline font-normal text-on-surface first:mt-0;
+}
+.journal-prose h2 {
+  @apply text-2xl sm:text-3xl;
+}
+.journal-prose h3 {
+  @apply text-xl sm:text-2xl;
+}
+.journal-prose a {
+  @apply border-b border-primary/40 text-primary transition-colors hover:border-primary;
+}
+.journal-prose ul,
+.journal-prose ol {
+  @apply mb-4 list-outside space-y-2 pl-6 text-on-surface-variant;
+}
+.journal-prose ul {
+  @apply list-disc;
+}
+.journal-prose ol {
+  @apply list-decimal;
+}
+.journal-prose img {
+  @apply my-8 h-auto max-w-full;
+}
+.journal-prose blockquote {
+  @apply my-6 border-l-2 border-primary/50 pl-4 font-headline italic text-on-surface-variant;
+}
+
+.text-stroke-thin {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+  color: transparent;
+}
+
+.hover-gold-overlay {
+  position: relative;
+}
+
+.hover-gold-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, rgba(120, 89, 21, 0.4));
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.hover-gold-overlay:hover::after {
+  opacity: 1;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.product-card .action-overlay {
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+}
+.product-card:hover .action-overlay {
+  transform: translateY(0);
+}
+
+/* Boutique (plantilla boutique-rebelle.html) */
+.boutique-card .boutique-action-overlay {
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+}
+.boutique-card:hover .boutique-action-overlay {
+  transform: translateY(0);
+}
+
+.zoom-container:hover img {
+  transform: scale(1.1);
+}
+.zoom-container img {
+  transition: transform 0.7s ease-in-out;
+}

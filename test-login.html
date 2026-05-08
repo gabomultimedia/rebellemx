@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login</title>
+</head>
+<body>
+    <h1>Test Login Form</h1>
+    <form id="loginForm">
+        <input type="email" name="email" placeholder="Email" value="admin@rebelleboutique.com"><br>
+        <input type="password" name="password" placeholder="Password" value="Admin2024!Rebelle"><br>
+        <button type="submit">Login</button>
+    </form>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const email = formData.get('email');
+            const password = formData.get('password');
+            
+            try {
+                const response = await fetch('/api/auth/[...nextauth]', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        email,
+                        password,
+                        redirect: 'false',
+                        csrfToken: 'test', // NextAuth might need this
+                        callbackUrl: '/',
+                        json: 'true'
+                    })
+                });
+                
+                const result = await response.text();
+                console.log('Status:', response.status);
+                console.log('Response:', result);
+                alert('Status: ' + response.status + '\nResponse: ' + result);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
