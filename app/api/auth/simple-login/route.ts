@@ -1,72 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
-import { compare } from "bcryptjs";
-import prisma from "@/lib/prisma";
-import { SignJWT } from "jose";
+import { SignJWT, jwtVerify } from "jose";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.NEXTAUTH_SECRET || "dev-secret-key-for-testing-only-2026"
-);
+function getSecret() {
+  const secret = process.env.NEXTAUTH_SECRET;
+  if (!secret) {
+    throw new Error("NEXTAUTH_SECRET no está configurado. Configúralo en .env antes de iniciar el servidor.");
+  }
+  return new TextEncoder().encode(secret);
+}
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
     
-    if (!email || !password) {
-      return NextResponse.json({ error: "Email y contraseña requeridos" }, { status: 400 });
-    }
-    
-    // Buscar usuario
-    const user = await prisma.user.findUnique({ where: { email } });
-    
-    if (!user?.password) {
-      return NextResponse.json({ error: "Credenciales incorrectas" }, { status: 401 });
-    }
-    
-    // Verificar contraseña
-    const valid = await compare(password, user.password);
-    
-    if (!valid) {
-      return NextResponse.json({ error: "Credenciales incorrectas" }, { status: 401 });
-    }
-    
-    // Crear token JWT
-    const token = await new SignJWT({
-      sub: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      image: user.image
-    })
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime("30d")
-      .sign(JWT_SECRET);
-    
-    // Crear respuesta
-    const response = NextResponse.json({
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        image: user.image
-      }
+    const backendRes = await fetch("https://rebelle.abundiss.com/api/auth/simple-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
     });
     
-    // Establecer cookie
-    response.cookies.set({
-      name: "auth-token",
-      value: token,
+    const data = await backendRes.json();
+    
+    if (!backendRes.ok || !data.success) {
+      return NextResponse.json(data, { status: backendRes.status });
+    }
+    
+    // We got a valid token from the backend
+    // Set the cookie ourselves for the frontend domain
+    const response = NextResponse.json({
+      success: true,
+      user: data.user,
+      token: data.token,
+    });
+    
+    response.cookies.set("auth-token", data.token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60 // 30 días
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
     });
     
     return response;
-  } catch (error) {
-    console.error("Error en simple-login:", error);
-    return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Login error:", error);
+    return NextResponse.json({ error: error?.message || "Error interno" }, { status: 500 });
   }
+}
+
+export async function GET(request: NextRequest) {
+  // Test endpoint
+  return NextResponse.json({ 
+    success: true, 
+    message: "Login API is working",
+    hasSecret: !!process.env.NEXTAUTH_SECRET 
+  });
 }
