@@ -1,9 +1,9 @@
-import { auth } from "@/lib/auth";
+import { customAuth } from "@/lib/custom-auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
 export default async function MembresiaPage() {
-  const session = await auth();
+  const session = await customAuth();
   if (!session?.user?.id) redirect("/cuenta/login");
 
   const user = await prisma.user.findUnique({

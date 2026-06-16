@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { auth } from "@/lib/auth";
+import { customAuth } from "@/lib/custom-auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { formatMoney } from "@/lib/utils";
 
 export default async function CuentaPedidosPage() {
-  const session = await auth();
+  const session = await customAuth();
   if (!session?.user?.id) redirect("/cuenta/login");
 
   const orders = await prisma.order.findMany({

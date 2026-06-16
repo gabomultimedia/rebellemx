@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { customAuth } from "@/lib/custom-auth";
 import prisma from "@/lib/prisma";
 import { formatMoney } from "@/lib/utils";
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function CuentaPedidoDetallePage({ params }: Props) {
-  const session = await auth();
+  const session = await customAuth();
   if (!session?.user?.id) redirect("/cuenta/login");
   const { id } = await params;
 

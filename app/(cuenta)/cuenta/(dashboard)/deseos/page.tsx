@@ -1,13 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { auth } from "@/lib/auth";
+import { customAuth } from "@/lib/custom-auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { formatMoney } from "@/lib/utils";
 import { productDisplayImage } from "@/lib/store-images";
 
 export default async function CuentaDeseosPage() {
-  const session = await auth();
+  const session = await customAuth();
   if (!session?.user?.id) redirect("/cuenta/login");
 
   const items = await prisma.wishlistItem.findMany({
