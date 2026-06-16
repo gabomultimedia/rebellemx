@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { signOut } from "@/lib/auth";
 
 const nav = [
@@ -23,6 +24,10 @@ export default function CuentaDashboardLayout({ children }: { children: React.Re
           <form
             action={async () => {
               "use server";
+              // Clear custom auth-token cookie (used by proxy.ts middleware)
+              const cookieStore = await cookies();
+              cookieStore.delete("auth-token");
+              // Sign out from NextAuth
               await signOut({ redirectTo: "/" });
             }}
           >
